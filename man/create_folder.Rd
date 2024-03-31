@@ -4,10 +4,15 @@
 \alias{create_folder}
 \title{Create folders}
 \usage{
-create_folder(path, token = NULL)
+create_folder(path, recursive = FALSE, error_on_exist = FALSE, token = NULL)
 }
 \arguments{
 \item{path}{remote path starting in your home directory.}
+
+\item{recursive}{create folders recursively. Default is \code{FALSE} for
+performance.}
+
+\item{error_on_exist}{throw an error when the folder already exists.}
 
 \item{token}{token. Use \code{login()} to connect to a server or provide token
 directly here.}
