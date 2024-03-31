@@ -3,6 +3,7 @@
 #' @param path remote path starting in your home directory.
 #' @param token token. Use `login()` to connect to a server or provide token
 #'   directly here.
+#' @param verbose print status to screen?
 #'
 #' @return a data.frame of files and metadata
 #' @export
@@ -11,7 +12,9 @@
 #' \dontrun{
 #' list_files()
 #' }
-list_files <- function(path = "", token = NULL) {
+list_files <- function(path = "",
+                       token = NULL,
+                       verbose = TRUE) {
   if (is.null(token)) {
     token <- get_token()
     if (is.null(token)) cli::cli_abort("You need to `login()` first.")
@@ -51,7 +54,10 @@ list_files <- function(path = "", token = NULL) {
 #' \dontrun{
 #' list_files()
 #' }
-download_files <- function(path = "", destination = basename(path), token = NULL) {
+download_files <- function(path = "",
+                           destination = basename(path),
+                           token = NULL,
+                           verbose = TRUE) {
 
   if (is.null(token)) {
     token <- get_token()
@@ -81,11 +87,16 @@ download_files <- function(path = "", destination = basename(path), token = NULL
 #' \dontrun{
 #' list_files()
 #' }
-upload_files <- function(source, path, overwrite = TRUE, token = NULL) {
+upload_files <- function(source,
+                         path,
+                         overwrite = TRUE,
+                         token = NULL,
+                         verbose = TRUE) {
 
   if (is.null(token)) {
     token <- get_token()
-    if (is.null(token)) cli::cli_abort("You need to `login()` first.")
+    if (is.null(token))
+      cli::cli_abort("You need to {.help [{.fun login}](nextcloudr::login)} first.")
   }
   if (length(source) != length(path)) {
     cli::cli_abort("source and path must have the same length")
@@ -96,7 +107,7 @@ upload_files <- function(source, path, overwrite = TRUE, token = NULL) {
   purrr::walk2(source, path, function(s, p) {
     if (!overwrite) {
       if (!methods::is(try(list_files(p), silent = TRUE), "try-error")) {
-        cli::cli_progress_step("File {p} already present.")
+        cli::cli_alert_info("File {p} already present.")
         return()
       }
     }
@@ -104,12 +115,8 @@ upload_files <- function(source, path, overwrite = TRUE, token = NULL) {
       httr2::req_method("PUT") |>
       httr2::req_body_file(s) |>
       httr2::req_perform()
-    cli::cli_progress_step("File upload {p} complete!")
-  }, .progress = TRUE)
-
-  if (length(path) > 1) {
-    cli::cli_alert_success("All {length(path)} files uploaded!")
-  }
+  }, .progress = pb_config("upload", verbose))
+  cli::cli_progress_done()
 
   invisible(path)
 }
