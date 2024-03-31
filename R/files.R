@@ -72,6 +72,8 @@ download_files <- function(path = "", destination = basename(path), token = NULL
 #'
 #' @inheritParams list_files
 #' @param source local file to upload.
+#' @param overwrite do you want to overwrite existing files (`TRUE`) or skip
+#'   them (`FALSE`)?
 #'
 #' @export
 #'
@@ -79,7 +81,7 @@ download_files <- function(path = "", destination = basename(path), token = NULL
 #' \dontrun{
 #' list_files()
 #' }
-upload_files <- function(source, path, token = NULL) {
+upload_files <- function(source, path, overwrite = TRUE, token = NULL) {
 
   if (is.null(token)) {
     token <- get_token()
@@ -91,7 +93,13 @@ upload_files <- function(source, path, token = NULL) {
 
   base_path <- file.path("/remote.php/dav/files", token$loginName)
 
-  reqs <- purrr::walk2(source, path, function(s, p) {
+  purrr::walk2(source, path, function(s, p) {
+    if (!overwrite) {
+      if (!methods::is(try(list_files(p), silent = TRUE), "try-error")) {
+        cli::cli_progress_step("File {p} already present.")
+        return()
+      }
+    }
     build_request(token, base_path, path = p) |>
       httr2::req_method("PUT") |>
       httr2::req_body_file(s) |>

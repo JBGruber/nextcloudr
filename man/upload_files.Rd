@@ -4,12 +4,15 @@
 \alias{upload_files}
 \title{Upload local files}
 \usage{
-upload_files(source, path, token = NULL)
+upload_files(source, path, overwrite = TRUE, token = NULL)
 }
 \arguments{
 \item{source}{local file to upload.}
 
 \item{path}{remote path starting in your home directory.}
+
+\item{overwrite}{do you want to overwrite existing files (\code{TRUE}) or skip
+them (\code{FALSE})?}
 
 \item{token}{token. Use \code{login()} to connect to a server or provide token
 directly here.}
