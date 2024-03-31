@@ -1,0 +1,22 @@
+Package: nextcloudr
+Title: Connect to a 'Nextcloud' server
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Johannes B.",
+           family = "Gruber",
+           email = "JohannesB.Gruber@gmail.com", 
+           role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0001-9177-1772"))
+Description: Implementation of the WebDAV operations supported in 'Nextcloud'.
+License: GPL (>= 3)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.1
+Imports: 
+    cli,
+    httr2,
+    purrr,
+    rlang,
+    tibble,
+    utils,
+    xml2
