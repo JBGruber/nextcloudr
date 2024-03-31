@@ -17,9 +17,8 @@ login <- function(server, user = NULL, use_cached = TRUE) {
   # see if token is cached
   cache_path <- tools::R_user_dir("nextcloudr", "cache")
   token <- character()
-  if (use_cached) {
-    token <- check_tokens(cache_path, user, use_cached)
-  }
+  if (use_cached)
+    token <- check_tokens(cache_path, server, user)
   if (identical(length(token), 0L)) {
     token <- auth_routine(server)
     choice <- utils::askYesNo(
@@ -49,9 +48,7 @@ login <- function(server, user = NULL, use_cached = TRUE) {
 }
 
 
-check_tokens <- function(cache_path = tools::R_user_dir("nextcloudr", "cache"),
-                         user = NULL,
-                         use_cached = TRUE) {
+check_tokens <- function(cache_path, server, user) {
   # check env
   cached_tokens <- get_token()
   if (!is.null(cached_tokens)) {
@@ -59,7 +56,7 @@ check_tokens <- function(cache_path = tools::R_user_dir("nextcloudr", "cache"),
   }
 
   # check disk
-  cached_tokens <- list.files(cache_path)
+  cached_tokens <- list.files(cache_path, basename(server))
   if (length(cached_tokens) > 1) {
     users <- regmatches(cached_tokens, regexpr("(?<=_).+$", cached_tokens, perl = TRUE))
     if (!is.null(user)) {
