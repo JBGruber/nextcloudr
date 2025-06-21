@@ -2,9 +2,12 @@
 % Please edit documentation in R/folders.r
 \name{create_folder}
 \alias{create_folder}
-\title{Create folders}
+\alias{delete_folder}
+\title{Create or delete folders}
 \usage{
 create_folder(path, recursive = FALSE, error_on_exist = FALSE, token = NULL)
+
+delete_folder(path, recursive = FALSE, token = NULL)
 }
 \arguments{
 \item{path}{remote path starting in your home directory.}
@@ -18,10 +21,11 @@ performance.}
 directly here.}
 }
 \description{
-Create folders
+Create or delete folders
 }
 \examples{
 \dontrun{
-list_files()
+create_folder("/test/test2", recursive = TRUE)
+delete_folder("/test/test2")
 }
 }

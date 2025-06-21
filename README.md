@@ -42,21 +42,23 @@ process.
 To create a folder:
 
 ``` r
-create_folder("/test/test2", recursive = TRUE)
+create_folder(path = "/test/test2", recursive = TRUE)
 #> ✔ Folder /test and /test/test2 created!
 ```
 
 To delete the folder:
 
-    delete_folder("/test/test2", recursive = TRUE)
+``` r
+delete_folder(path = "/test/test2", recursive = TRUE)
+#> ✔ Folder /test/test2/ and /test/ deleted!
+```
 
 ### Files
 
 To upload files:
 
 ``` r
-file.create("test.txt")
-#> [1] TRUE
+void <- file.create("test.txt")
 upload_files(
   source = "test.txt",
   path = "/test/test2/test.txt"
@@ -74,3 +76,4 @@ To delete files:
 ``` r
 delete_files(path = "/test/test2/test.txt")
 ```
+

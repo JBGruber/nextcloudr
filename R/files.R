@@ -72,9 +72,11 @@ download_files <- function(path = "",
 
   base_path <- file.path("/remote.php/dav/files", token$loginName)
 
-  resp <- build_request(token, base_path, path) |>
-    httr2::req_method("GET") |>
-    httr2::req_perform(path = destination)
+  resp <- purrr::map(path, function(p) {
+    build_request(token, base_path, p) |>
+      httr2::req_method("GET")
+  }) |>
+    httr2::req_perform_parallel(paths = destination)
 
   invisible(destination)
 }
@@ -137,3 +139,33 @@ upload_files <- function(source,
   invisible(path)
 }
 
+
+#' Delete remote files
+#'
+#' @inheritParams list_files
+#'
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' list_files("Photos")
+#' delete_files("/Photos/Vineyard.jpg")
+#' }
+delete_files <- function(path,
+                         token = NULL,
+                         verbose = TRUE) {
+  if (is.null(token)) {
+    token <- get_token()
+    if (is.null(token)) cli::cli_abort("You need to `login()` first.")
+  }
+
+  base_path <- file.path("/remote.php/dav/files", token$loginName)
+
+  resp <- purrr::map(path, function(p) {
+    build_request(token, base_path, p) |>
+      httr2::req_method("DELETE")
+  }) |>
+    httr2::req_perform_parallel()
+
+  invisible(resp)
+}

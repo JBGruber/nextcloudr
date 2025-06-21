@@ -1,4 +1,4 @@
-#' Create folders
+#' Create or delete folders
 #'
 #' @inheritParams list_files
 #' @param recursive create folders recursively. Default is `FALSE` for
@@ -9,7 +9,8 @@
 #'
 #' @examples
 #' \dontrun{
-#' list_files()
+#' create_folder("/test/test2", recursive = TRUE)
+#' delete_folder("/test/test2")
 #' }
 create_folder <- function(path, recursive = FALSE, error_on_exist = FALSE, token = NULL) {
 
@@ -32,4 +33,19 @@ create_folder <- function(path, recursive = FALSE, error_on_exist = FALSE, token
   })
 
   cli::cli_alert_success("Folder {path} created!")
+}
+
+#' @rdname create_folder
+#' @export
+delete_folder <- function(path, recursive = FALSE, token = NULL) {
+  if (recursive) {
+    path <- rev(split_path(path))
+    path <- paste0(path, "/")
+  }
+  purrr::walk(path, function(p) {
+    delete_files(path = p, token = token)
+    # folder might still be blocked without wait
+    Sys.sleep(1)
+  })
+  cli::cli_alert_success("Folder {path} deleted!")
 }
