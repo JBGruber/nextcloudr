@@ -1,0 +1,95 @@
+---
+title: "picture_upload"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{picture_upload}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+The main use case for writing this package was to upload images I took on my camera to my nextcloud server.
+This tutorial walks you through the steps I usually use to do that.
+First, let's load the packages I use.
+
+```{r setup}
+library(nextcloudr)
+library(exifr)
+library(tidyverse)
+```
+
+I usually just just copy the files to my laptop into an intake folder:
+
+```{r}
+intake_folder <- "/home/johannes/Pictures/intake/"
+```
+
+Using `list.files`, I search for all MP4, RAF and JPG files, which are the three file formats my camera produces.
+Since I like the images to be in sub-folders showing the year and month each image was taken, I use the `exifr` package to determine the time at picture was taken.
+Then I move each file into a sub folder with YEAR/MONTH:
+
+```{r}
+intake_files <- list.files(intake_folder, pattern = ".RAF|.JPG|.MP4", full.names = TRUE)
+for (f in intake_files) {
+  exif_dat <- exifr::read_exif(f)
+  year <- str_extract(exif_dat$CreateDate, "^\\d{4}")
+  month <- str_extract(exif_dat$CreateDate, "(?<=^\\d{4}:)\\d{2}")
+  path <- file.path(intake_folder, year, month, basename(f))
+  dir.create(dirname(path), showWarnings = FALSE, recursive = TRUE)
+  file.rename(f, path)
+}
+```
+
+I use `list.files` again, this time recursively, to find the images and videos in the sub-folders.
+
+```{r}
+intake_files <- list.files(intake_folder,
+                           pattern = ".RAF|.JPG|.MP4", 
+                           recursive = TRUE,
+                           full.names = TRUE)
+```
+
+On the server, I want the images to be in the same folders.
+So I simply replace the intake path of the file locations with the Photos folder on the server:
+
+```{r}
+destinations <- str_replace(intake_files,
+                            intake_folder,
+                            "Photos")
+destinations |> 
+  head()
+```
+
+When uploading files, the destination folder must exist already.
+Creating these folders is the first action I actually perform on the Nextcloud server, so I need to log in first:
+
+```{r}
+login(server = "https://johannes-rstudio.online")
+folders <- destinations |> 
+  dirname() |> 
+  unique()
+for (dir in folders) {
+  create_folder(dir, recursive = TRUE)
+}
+```
+
+Now that the folder are created, I can upload the images and videos.
+
+```{r}
+upload_files(source = intake_files,
+             path = destinations,
+             overwrite = FALSE)
+```
+
+After this has succeeded, I can clean up locally by deleting the images (tip: I usually run the command above twice, as it checks for each file if it is already present):
+
+```{r}
+file.remove(intake_files)
+```
+
