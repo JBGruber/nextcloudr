@@ -4,7 +4,7 @@
 \alias{login}
 \title{Login to a server}
 \usage{
-login(server, user = NULL, use_cached = TRUE)
+login(server, user = NULL, use_cached = TRUE, token = NULL)
 }
 \arguments{
 \item{server}{the URL to a 'Nextcloud' server.}
@@ -13,6 +13,8 @@ login(server, user = NULL, use_cached = TRUE)
 are cached).}
 
 \item{use_cached}{\code{FALSE} forces the creation of a new token.}
+
+\item{name}{token use existing token}
 }
 \value{
 token (invisible)

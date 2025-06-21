@@ -4,6 +4,7 @@
 #' @param user optional. The user name (only relevant if multiple user tokens
 #'   are cached).
 #' @param use_cached `FALSE` forces the creation of a new token.
+#' @param name token use existing token
 #'
 #' @return token (invisible)
 #' @export
@@ -12,12 +13,13 @@
 #' \dontrun{
 #' login("https://cloud.example.com")
 #' }
-login <- function(server, user = NULL, use_cached = TRUE) {
+login <- function(server, user = NULL, use_cached = TRUE, token = NULL) {
+  if (missing(server) && is.null(token))
+    cli::cli_abort("You need to tell me which server to login to!")
 
   # see if token is cached
   cache_path <- tools::R_user_dir("nextcloudr", "cache")
-  token <- character()
-  if (use_cached)
+  if (use_cached && is.null(token))
     token <- check_tokens(cache_path, server, user)
   if (identical(length(token), 0L)) {
     token <- auth_routine(server)

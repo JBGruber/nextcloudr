@@ -11,6 +11,11 @@
 #' @examples
 #' \dontrun{
 #' list_files()
+#'
+#' # list files in folder
+#' list_files("Photos")
+#' # OR
+#' list_files("/Photos/")
 #' }
 list_files <- function(path = "",
                        token = NULL,
@@ -52,7 +57,8 @@ list_files <- function(path = "",
 #'
 #' @examples
 #' \dontrun{
-#' list_files()
+#' list_files("Photos")
+#' download_files("/Photos/Vineyard.jpg")
 #' }
 download_files <- function(path = "",
                            destination = basename(path),
@@ -85,7 +91,12 @@ download_files <- function(path = "",
 #'
 #' @examples
 #' \dontrun{
-#' list_files()
+#' jpgs <- list.files(pattern = "jpg")
+#' upload_files(
+#'   source = jpgs,
+#'   path = file.path("/InstantUpload/", jpgs),
+#'   overwrite = FALSE
+#' )
 #' }
 upload_files <- function(source,
                          path,
@@ -107,14 +118,19 @@ upload_files <- function(source,
   purrr::walk2(source, path, function(s, p) {
     if (!overwrite) {
       if (!methods::is(try(list_files(p), silent = TRUE), "try-error")) {
-        cli::cli_alert_info("File {p} already present.")
-        return()
+        # check_size = TRUE
+
+        if (file.size(s) == list_files(p)$size) {
+          cli::cli_alert_info("File {p} already present.")
+          return()
+        }
       }
     }
     build_request(token, base_path, path = p) |>
       httr2::req_method("PUT") |>
       httr2::req_body_file(s) |>
       httr2::req_perform()
+    closeAllConnections()
   }, .progress = pb_config("upload", verbose))
   cli::cli_progress_done()
 

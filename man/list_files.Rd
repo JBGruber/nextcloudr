@@ -4,13 +4,15 @@
 \alias{list_files}
 \title{List remote files}
 \usage{
-list_files(path = "", token = NULL)
+list_files(path = "", token = NULL, verbose = TRUE)
 }
 \arguments{
 \item{path}{remote path starting in your home directory.}
 
 \item{token}{token. Use \code{login()} to connect to a server or provide token
 directly here.}
+
+\item{verbose}{print status to screen?}
 }
 \value{
 a data.frame of files and metadata
@@ -21,5 +23,10 @@ List remote files
 \examples{
 \dontrun{
 list_files()
+
+# list files in folder
+list_files("Photos")
+# OR
+list_files("/Photos/")
 }
 }

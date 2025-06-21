@@ -4,7 +4,7 @@
 \alias{upload_files}
 \title{Upload local files}
 \usage{
-upload_files(source, path, overwrite = TRUE, token = NULL)
+upload_files(source, path, overwrite = TRUE, token = NULL, verbose = TRUE)
 }
 \arguments{
 \item{source}{local file to upload.}
@@ -16,12 +16,19 @@ them (\code{FALSE})?}
 
 \item{token}{token. Use \code{login()} to connect to a server or provide token
 directly here.}
+
+\item{verbose}{print status to screen?}
 }
 \description{
 Upload local files
 }
 \examples{
 \dontrun{
-list_files()
+jpgs <- list.files(pattern = "jpg")
+upload_files(
+  source = jpgs,
+  path = file.path("/InstantUpload/", jpgs),
+  overwrite = FALSE
+)
 }
 }

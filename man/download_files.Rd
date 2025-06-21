@@ -4,7 +4,12 @@
 \alias{download_files}
 \title{Download remote files}
 \usage{
-download_files(path = "", destination = basename(path), token = NULL)
+download_files(
+  path = "",
+  destination = basename(path),
+  token = NULL,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{path}{remote path starting in your home directory.}
@@ -13,12 +18,15 @@ download_files(path = "", destination = basename(path), token = NULL)
 
 \item{token}{token. Use \code{login()} to connect to a server or provide token
 directly here.}
+
+\item{verbose}{print status to screen?}
 }
 \description{
 Download remote files
 }
 \examples{
 \dontrun{
-list_files()
+list_files("Photos")
+download_files("/Photos/Vineyard.jpg")
 }
 }

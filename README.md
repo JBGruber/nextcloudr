@@ -1,0 +1,76 @@
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+# nextcloudr
+
+<!-- badges: start -->
+
+<!-- badges: end -->
+
+`nextcloudr`is a very incomplete `R` implementation of the [nextcloud
+WebDAV
+API](https://docs.nextcloud.com/server/latest/developer_manual/client_apis/WebDAV/basic.html).
+I might extend it at some point, but so far it’s mostly for personal
+usage.
+
+## Installation
+
+You can install the development version of nextcloudr from
+[GitHub](https://github.com/) with:
+
+``` r
+# install.packages("pak")
+pak::pak("JBGruber/nextcloudr")
+```
+
+## Usage
+
+### Authentication
+
+Every time you start the package, you have to log into a nextcloud
+instance first:
+
+``` r
+login("https://cloud.example.com")
+```
+
+The first time you do so, you will be guided through the authentication
+process.
+
+### Folders
+
+To create a folder:
+
+``` r
+create_folder("/test/test2", recursive = TRUE)
+#> ✔ Folder /test and /test/test2 created!
+```
+
+To delete the folder:
+
+    delete_folder("/test/test2", recursive = TRUE)
+
+### Files
+
+To upload files:
+
+``` r
+file.create("test.txt")
+#> [1] TRUE
+upload_files(
+  source = "test.txt",
+  path = "/test/test2/test.txt"
+)
+```
+
+To download files:
+
+``` r
+download_files(path = "/test/test2/test.txt")
+```
+
+To delete files:
+
+``` r
+delete_files(path = "/test/test2/test.txt")
+```
